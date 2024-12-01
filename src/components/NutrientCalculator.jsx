@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { cropDatabase, cropCategories, categoryMetadata, calculateNutrientRequirements, calculateFertilizerQuantity } from '../data/cropDatabase';
+import { useLanguage } from '../contexts/LanguageContext';
+import { translations } from '../translations';
 
 const CategoryCard = ({ category, selected, onClick }) => {
+  const { currentLanguage } = useLanguage();
+  const t = translations[currentLanguage];
+  
   const handleImageError = (e) => {
     e.target.src = '/images/placeholder.jpg';
   };
@@ -14,19 +19,28 @@ const CategoryCard = ({ category, selected, onClick }) => {
       }`}
     >
       <img 
-        src={`/images/categories/${categoryMetadata[category].image}`}
-        alt={category}
+        src={`/images/categories/${category.toLowerCase()}.jpg`}
+        alt={t.cropCategories[category.toLowerCase()].name}
         onError={handleImageError}
         className="w-full h-32 object-cover rounded-md mb-3"
       />
-      <h3 className="text-center font-medium text-gray-900">{category}</h3>
-      <p className="text-sm text-center text-gray-600">{categoryMetadata[category].description}</p>
-      <span className="block text-center text-2xl mt-2">{categoryMetadata[category].icon}</span>
+      <h3 className="text-center font-medium text-gray-900">
+        {t.cropCategories[category.toLowerCase()].name}
+      </h3>
+      <p className="text-sm text-center text-gray-600">
+        {t.cropCategories[category.toLowerCase()].description}
+      </p>
+      <span className="block text-center text-2xl mt-2">
+        {t.cropCategories[category.toLowerCase()].icon}
+      </span>
     </div>
   );
 };
 
 const CropCard = ({ crop, selected, onClick }) => {
+  const { currentLanguage } = useLanguage();
+  const t = translations[currentLanguage];
+
   const handleImageError = (e) => {
     e.target.src = '/images/placeholder.jpg';
   };
@@ -41,24 +55,27 @@ const CropCard = ({ crop, selected, onClick }) => {
       <div className="relative">
         <img 
           src={`/images/crops/${crop.category.toLowerCase().replace(' ', '-')}/${crop.image}`}
-          alt={crop.name}
+          alt={t.crops[crop.name.toLowerCase()]}
           onError={handleImageError}
           className="w-full h-40 object-cover rounded-md mb-3"
         />
         <span className="absolute top-2 right-2 text-2xl">{crop.icon}</span>
       </div>
-      <h3 className="font-medium text-gray-900">{crop.name}</h3>
+      <h3 className="font-medium text-gray-900">{t.crops[crop.name.toLowerCase()]}</h3>
       <p className="text-sm text-gray-500 italic">{crop.scientific}</p>
-      <p className="text-sm text-gray-600 mt-2">NPK: {crop.npk.join('-')}</p>
+      <p className="text-sm text-gray-600 mt-2">{t.npkRatio}: {crop.npk.join('-')}</p>
       <div className="mt-2 text-sm">
-        <p className="text-gray-600">Season: {crop.season}</p>
-        <p className="text-gray-600">Duration: {crop.growthDuration}</p>
+        <p className="text-gray-600">{t.season}: {t.seasons[crop.season.toLowerCase()]}</p>
+        <p className="text-gray-600">{t.duration}: {crop.growthDuration}</p>
       </div>
     </div>
   );
 };
 
 const NutrientCalculator = () => {
+  const { currentLanguage } = useLanguage();
+  const t = translations[currentLanguage];
+
   const [selectedCategory, setSelectedCategory] = useState('');
   const [formData, setFormData] = useState({
     crop: '',
@@ -157,12 +174,12 @@ const NutrientCalculator = () => {
           <div className="mb-8 bg-white rounded-xl p-6 shadow-sm">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">3</span>
-              Enter Land Details
+              {t.enterLandDetails}
             </h2>
             <form onSubmit={calculateResults} className="max-w-2xl mx-auto space-y-8">
               <div>
                 <label className="block text-lg font-medium text-gray-700 mb-2">
-                  Land Area (hectares)
+                  {t.landArea}
                 </label>
                 <input
                   type="number"
@@ -178,7 +195,7 @@ const NutrientCalculator = () => {
 
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Fertilizer NPK Ratio (%)
+                  Organic Manure NPK Content (%)
                 </h3>
                 <div className="grid grid-cols-3 gap-6">
                   {['N', 'P', 'K'].map(nutrient => (

@@ -462,24 +462,52 @@ export const cropDatabase = {
   }
 };
 
-// Helper functions for calculations
-export const calculateNutrientRequirements = (crop, area) => {
-  const baseNPK = crop.npk;
-  return baseNPK.map(nutrient => nutrient * area);
+// Soil type efficiency factors
+const SOIL_EFFICIENCY = {
+  'Sandy': 0.70,
+  'Loamy': 0.90,
+  'Clay': 0.85,
+  'Sandy Loam': 0.80,
+  'Clay Loam': 0.85,
+  'Silt Loam': 0.88,
+  'Black': 0.90,
+  'Red': 0.80,
+  'Laterite': 0.75
 };
 
-export const calculateFertilizerQuantity = (requiredNutrients, fertilizerRatio) => {
-  const ratioMultipliers = fertilizerRatio.map((ratio, idx) => 
-    ratio > 0 ? requiredNutrients[idx] / ratio : 0
+export const calculateNutrientRequirements = (crop, area, soilType = 'Loamy', season = 'Kharif') => {
+  const baseNPK = crop.npk;
+  const soilFactor = SOIL_EFFICIENCY[soilType] || 0.80;
+  const seasonFactor = season === 'Kharif' ? 1.2 : 1.0; // 20% more for rainy season
+
+  return baseNPK.map(nutrient => 
+    (nutrient * area * seasonFactor / soilFactor).toFixed(2)
   );
-  
-  const multiplier = Math.max(...ratioMultipliers.filter(m => m > 0));
-  const totalQuantityKg = multiplier * (fertilizerRatio.reduce((a, b) => a + b, 0));
+};
+
+export const calculateFertilizerQuantity = (requiredNutrients, isSolidBioslurry = true) => {
+  const npkContent = isSolidBioslurry ? BIOSLURRY_CONTENT.solid : BIOSLURRY_CONTENT.liquid;
+  const availabilityFactor = isSolidBioslurry ? 0.5 : 0.7; // 50% for solid, 70% for liquid
+
+  // Calculate required quantities for each nutrient
+  const quantities = [
+    requiredNutrients[0] / (npkContent.N * availabilityFactor), // N
+    requiredNutrients[1] / (npkContent.P * availabilityFactor), // P
+    requiredNutrients[2] / (npkContent.K * availabilityFactor)  // K
+  ];
+
+  // Use maximum quantity to ensure all nutrient requirements are met
+  const totalQuantityKg = Math.max(...quantities);
   
   return {
     quantityTons: (totalQuantityKg / 1000).toFixed(2),
-    nutrientsProvided: fertilizerRatio.map(ratio => (ratio * multiplier).toFixed(2)),
-    ratio: fertilizerRatio.join(':')
+    quantityKg: totalQuantityKg.toFixed(2),
+    nutrientsProvided: [
+      (totalQuantityKg * npkContent.N * availabilityFactor).toFixed(2),
+      (totalQuantityKg * npkContent.P * availabilityFactor).toFixed(2),
+      (totalQuantityKg * npkContent.K * availabilityFactor).toFixed(2)
+    ],
+    applicationRate: (totalQuantityKg / parseFloat(requiredNutrients[0])).toFixed(2)
   };
 };
 

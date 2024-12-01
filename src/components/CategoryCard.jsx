@@ -1,11 +1,31 @@
 import React from 'react';
-import { getCategoryMetadata } from '../data/cropDatabase';
+import { categoryMetadata } from '../data/cropDatabase';
+import { useLanguage } from '../contexts/LanguageContext';
+import { translations } from '../translations';
 
-const CategoryCard = ({ category, image, selected, onClick }) => {
+const CategoryCard = ({ category, selected, onClick }) => {
+  const { currentLanguage } = useLanguage();
+  const t = translations[currentLanguage];
+
   const handleImageError = (e) => {
     e.target.src = '/images/placeholder.jpg';
   };
-  
+
+  const imagePath = categoryMetadata[category]?.image 
+    ? `/images/categories/${categoryMetadata[category].image.toLowerCase().replace(' ', '-')}`
+    : '/images/placeholder.jpg';
+
+  const getCategoryTranslation = () => {
+    const categoryKey = category.toLowerCase();
+    return t.cropCategories[categoryKey] || {
+      name: category,
+      description: categoryMetadata[category]?.description,
+      icon: categoryMetadata[category]?.icon
+    };
+  };
+
+  const categoryTranslation = getCategoryTranslation();
+
   return (
     <div
       onClick={onClick}
@@ -14,12 +34,20 @@ const CategoryCard = ({ category, image, selected, onClick }) => {
       }`}
     >
       <img 
-        src={`/images/categories/${image}`}
-        alt={category}
+        src={imagePath}
+        alt={categoryTranslation.name}
         onError={handleImageError}
         className="w-full h-32 object-cover rounded-md mb-3"
       />
-      <h3 className="text-center font-medium text-gray-900">{category}</h3>
+      <h3 className="text-center font-medium text-gray-900">
+        {categoryTranslation.name}
+      </h3>
+      <p className="text-sm text-center text-gray-600">
+        {categoryTranslation.description}
+      </p>
+      <span className="block text-center text-2xl mt-2">
+        {categoryTranslation.icon}
+      </span>
     </div>
   );
 };
