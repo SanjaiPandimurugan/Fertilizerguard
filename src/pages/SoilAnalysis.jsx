@@ -92,6 +92,13 @@ const SoilAnalysis = () => {
       'Loamy Soil': 'मध्यम बनावट, संतुलित गुणधर्म',
       'Black Soil': 'सेंद्रिय पदार्थांनी समृद्ध',
       'Red Soil': 'लोह समृद्ध, मध्यम सुपीकता'
+    },
+    hr: {
+      'Clay Soil': 'भारी माटी, पाणी रोकण आली',
+      'Sandy Soil': 'हल्की माटी, कम पाणी रोकण आली',
+      'Loamy Soil': 'दोमट माटी, सब चीज बराबर',
+      'Black Soil': 'काली माटी, खाद आली',
+      'Red Soil': 'लाल माटी, लोहे आली'
     }
   };
 
@@ -140,6 +147,21 @@ const SoilAnalysis = () => {
       'Vegetables': 'भाज्या',
       'Most crops': 'बहुतेक पिके',
       'General crops': 'सामान्य पिके'
+    },
+    hr: {
+      'Rice': 'धान',
+      'Wheat': 'गेहूं',
+      'Cabbage': 'बंद गोभी',
+      'Carrots': 'गाजर',
+      'Potatoes': 'आलू',
+      'Peanuts': 'मूंगफली',
+      'Cotton': 'कपास',
+      'Sugarcane': 'गन्ना',
+      'Groundnut': 'मूंगफली',
+      'Tobacco': 'तमाकू',
+      'Vegetables': 'साग-सब्जी',
+      'Most crops': 'ज्यादातर फसलां',
+      'General crops': 'आम फसलां'
     }
   };
 

@@ -3,7 +3,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 export const languages = {
   en: { name: 'English', flag: '🇺🇸' },
   hi: { name: 'हिंदी', flag: '🇮🇳' },
-  mr: { name: 'मराठी', flag: '🇮🇳' }
+  mr: { name: 'मराठी', flag: '🇮🇳' },
+  hr: { name:'हरियाणवी', flag:'🇮🇳'} 
 };
 
 const LanguageContext = createContext();
